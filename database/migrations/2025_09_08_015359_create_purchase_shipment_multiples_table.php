@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('purchase_shipment_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_shipment_id')->nullable()->constrained('purchase_shipments')->cascadeOnDelete();
-            $table->foreignId('purchase_shipment_multiple_id')
+            $table->string('purchase_shipment_id')->nullable()->constrained('purchase_shipments')->cascadeOnDelete();
+            $table->string('purchase_shipment_multiple_id')
                 ->nullable()
                 ->constrained('purchase_shipment_multiples')
                 ->nullOnDelete();
-            $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();
+            $table->string('item_id')->nullable()->constrained('items')->cascadeOnDelete();
             $table->string('description')->nullable();
             $table->integer('quantity')->nullable()->default(1);
-            $table->foreignId('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
+            $table->string('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
             $table->timestamps();
         });
     }

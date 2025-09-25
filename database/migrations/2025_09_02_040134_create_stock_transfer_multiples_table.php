@@ -13,26 +13,18 @@ return new class extends Migration
     {
         Schema::create('stock_transfer_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('stock_transfer_id')
-                ->nullable()
-                ->constrained('stock_transfers')
-                ->cascadeOnDelete();
+            $table->string('stock_transfer_id')
+                ->nullable();
 
-            $table->foreignId('purchase_requisition_multiple_id')
-                ->nullable()
-                ->constrained('purchase_requisition_multiples')
-                ->nullOnDelete();
+            $table->string('purchase_requisition_multiple_id')
+                ->nullable();
 
-            $table->foreignId('item_id')
-                ->nullable()
-                ->constrained('items')
-                ->cascadeOnDelete();
+            $table->string('item_id')
+                ->nullable();
 
             $table->integer('quantity')->default(1);
-            $table->foreignId('unit_id')
-                ->nullable()
-                ->constrained('units')
-                ->cascadeOnDelete();
+            $table->string('unit_id')
+                ->nullable();
 
             $table->string('description')->nullable();
 

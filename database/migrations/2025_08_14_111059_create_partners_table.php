@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('vendor')->nullable()->default(false);
             $table->string('vendor_payment_term')->nullable();
             $table->foreignId('partner_category_id')->nullable()->constrained('partner_categories')->cascadeOnDelete();
-            $table->foreignId('sales_pricelist_id')->nullable()->constrained('sales_pricelists')->cascadeOnDelete();
+            $table->string('sales_pricelist_id')->nullable();
             $table->boolean('tax')->nullable()->default(false);
             $table->string('tax_name')->nullable();
             $table->string('tax_number')->nullable();

@@ -47,7 +47,7 @@ class PurchaseOrderSeeder extends Seeder
             'delivery_method_id'       => $deliveryMethodId,
             'reference'                => 'REF-001',
             'description'              => 'Seeder Purchase Order',
-            'payment_term'             => '30 Days',
+            'payment_term_id'             => 1,
             'transaction_at'           => now()->toDateTimeString(),
             'estimate_at'              => now()->addDays(7)->toDateTimeString(),
             'contact_person_name_shipment'  => 'John Doe',

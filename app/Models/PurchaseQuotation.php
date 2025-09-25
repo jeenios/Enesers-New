@@ -82,4 +82,9 @@ class PurchaseQuotation extends Model
     {
         return $this->hasMany(PurchaseRequisitionMultiple::class);
     }
+
+    public function paymentTerm()
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
 }

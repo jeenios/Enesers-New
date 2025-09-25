@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name')->nullable();
-            $table->foreignId('warehouse_category_id')->nullable()->constrained('warehouse_categories')->cascadeOnDelete();
+            $table->string('warehouse_category_id')->nullable();
             $table->boolean('warehouse_allow')->default(true)->nullable();
             $table->text('description')->nullable();
             $table->string('address_type')->nullable();

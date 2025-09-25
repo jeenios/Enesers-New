@@ -271,8 +271,7 @@ class PartnerResource extends Resource
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
-                    ])
-                    ->sortable(),
+                    ]),
 
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -307,13 +306,11 @@ class PartnerResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

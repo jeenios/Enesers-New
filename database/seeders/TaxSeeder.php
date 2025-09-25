@@ -13,7 +13,7 @@ class TaxSeeder extends Seeder
         DB::table('taxes')->insert([
             [
                 'code' => 'TAX-01',
-                'state' => true, // Active
+                'state' => 'Active',
                 'name' => 'PPN 11%',
                 'description' => 'Pajak Pertambahan Nilai 11%',
                 'value' => 11.0,
@@ -25,7 +25,7 @@ class TaxSeeder extends Seeder
             ],
             [
                 'code' => 'TAX-02',
-                'state' => true, // Active
+                'state' => 'Active',
                 'name' => 'PPH 23',
                 'description' => 'Pajak Penghasilan Pasal 23',
                 'value' => 2.0,
@@ -37,7 +37,7 @@ class TaxSeeder extends Seeder
             ],
             [
                 'code' => 'TAX-03',
-                'state' => false, // Inactive
+                'state' => 'Active',
                 'name' => 'PPN 10%',
                 'description' => 'Pajak Pertambahan Nilai lama 10%',
                 'value' => 10.0,

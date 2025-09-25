@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('item_sales_price_entries', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('description')->nullable();
             $table->string('date_entry_type')->nullable();
             $table->foreignId('sales_pricelist_id')->nullable()->constrained('sales_pricelists')->cascadeOnDelete();

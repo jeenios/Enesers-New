@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseRequisitionResource\Pages;
 use App\Filament\Resources\PurchaseRequisitionResource\RelationManagers;
+use App\Models\BusinessUnit;
+use App\Models\Company;
+use App\Models\Item;
 use App\Models\PurchaseRequisition;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -18,6 +21,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -35,7 +39,7 @@ class PurchaseRequisitionResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('Admin');
+        return auth()->user()?->hasAnyRole(['Admin', 'Accounting']);
     }
 
     public static function form(Form $form): Form
@@ -60,6 +64,7 @@ class PurchaseRequisitionResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -71,6 +76,7 @@ class PurchaseRequisitionResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('bussinessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -84,6 +90,7 @@ class PurchaseRequisitionResource extends Resource
                                                 'Project' => 'Project',
                                                 'Non Project' => 'Non Project',
                                             ])
+                                            ->default('Non Project')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -133,6 +140,7 @@ class PurchaseRequisitionResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->placeholder('')
+                                            ->default(auth()->user()->id)
                                             ->nullable(),
 
                                         DateTimePicker::make('transaction_at')
@@ -160,15 +168,30 @@ class PurchaseRequisitionResource extends Resource
                                                     ->preload()
                                                     ->searchable()
                                                     ->placeholder('')
-                                                    ->required(),
+                                                    ->required()
+                                                    ->reactive() // penting supaya trigger
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if ($state) {
+                                                            $item = Item::with('unit')->find($state);
+                                                            if ($item && $item->unit_id) {
+                                                                $set('unit_id', $item->unit_id);
+                                                            } else {
+                                                                $set('unit_id', null);
+                                                            }
+                                                        } else {
+                                                            $set('unit_id', null);
+                                                        }
+                                                    }),
+
                                                 TextInput::make('description')
                                                     ->label('Description'),
+
                                                 TextInput::make('quantity')
                                                     ->numeric()
                                                     ->required()
                                                     ->default(1)
-                                                    ->required()
                                                     ->label('Requested Quantity'),
+
                                                 Select::make('unit_id')
                                                     ->label('Unit')
                                                     ->relationship('unit', 'name')
@@ -278,8 +301,7 @@ class PurchaseRequisitionResource extends Resource
                     ->colors([
                         'success' => 'Completed',
                         'danger' => 'Pending',
-                    ])
-                    ->sortable(),
+                    ]),
 
                 Tables\Columns\TextColumn::make('warehouse.name')
                     ->searchable(),
@@ -299,13 +321,11 @@ class PurchaseRequisitionResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

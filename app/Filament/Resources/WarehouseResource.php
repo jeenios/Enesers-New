@@ -31,10 +31,9 @@ class WarehouseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function canAccess(): bool
+    public static function canViewAny(): bool
     {
-        $user = auth()->user();
-        return $user && $user->hasAnyRole(['Admin', 'Warehouse']);
+        return auth()->user()?->hasAnyRole(['Admin', 'Warehouse', 'Accounting']);
     }
 
     public static function form(Form $form): Form
@@ -154,8 +153,7 @@ class WarehouseResource extends Resource
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
-                    ])
-                    ->sortable(),
+                    ]),
 
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -170,13 +168,11 @@ class WarehouseResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bill_of_materials', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->foreignId('item_category_id')->nullable()->constrained('item_categories')->cascadeOnDelete();

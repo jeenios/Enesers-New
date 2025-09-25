@@ -57,7 +57,6 @@ class AppServiceProvider extends ServiceProvider
     }
 
     protected $policies = [
-        // Role::class => RolePolicy::class,
         Resource::class => ResourcePolicy::class,
     ];
 

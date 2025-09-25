@@ -19,6 +19,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -30,14 +32,22 @@ class WorkReportResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('Admin');
+        return auth()->user()?->hasAnyRole(['Admin', 'Accounting', 'Warehouse', 'Aftersale', 'Karyawan']);
     }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->where('user_id', auth()->id());
+        $query = parent::getEloquentQuery();
+
+        // Jika username husien -> bisa lihat semua data
+        if (auth()->check() && auth()->user()->username === 'husien') {
+            return $query;
+        }
+
+        // Default: hanya lihat work report miliknya sendiri
+        return $query->where('user_id', auth()->id());
     }
+
 
     public static function form(Form $form): Form
     {
@@ -62,19 +72,10 @@ class WorkReportResource extends Resource
                                                 'Completed' => 'Completed',
                                             ])
                                             ->placeholder('')
+                                            ->searchable()
+                                            ->preload()
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm']),
-
-                                        // // 👇 Employee field (user_id)
-                                        // Select::make('user_id')
-                                        //     ->label('Employee')
-                                        //     ->relationship('user', 'employee_name')
-                                        //     ->searchable()
-                                        //     ->preload()
-                                        //     ->required()
-                                        //     ->default(fn() => auth()->id())
-                                        //     ->inlineLabel()
-                                        //     ->extraAttributes(['class' => 'max-w-sm']),
 
                                         DateTimePicker::make('waktu_mulai')
                                             ->label('Waktu Mulai')
@@ -83,13 +84,60 @@ class WorkReportResource extends Resource
                                             ->seconds(false)
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->inlineLabel(),
+
                                         DateTimePicker::make('waktu_selesai')
                                             ->label('Waktu Selesai')
                                             ->required()
                                             ->default(now())
                                             ->seconds(false)
                                             ->extraAttributes(['class' => 'max-w-sm'])
-                                            ->inlineLabel(),
+                                            ->inlineLabel()
+                                            ->rules([
+                                                function (callable $get) {
+                                                    return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                                        $mulai = $get('waktu_mulai');
+                                                        $selesai = $value;
+
+                                                        if ($mulai && $selesai) {
+                                                            $mulaiCarbon = Carbon::parse($mulai);
+                                                            $selesaiCarbon = Carbon::parse($selesai);
+
+                                                            // Rule 1: waktu_selesai < waktu_mulai
+                                                            if ($selesaiCarbon->lessThan($mulaiCarbon)) {
+                                                                $fail("Waktu selesai tidak boleh lebih kecil dari waktu mulai.");
+                                                            }
+
+                                                            // Rule 2: durasi > 8 jam
+                                                            $diffInMinutes = $mulaiCarbon->diffInMinutes($selesaiCarbon);
+                                                            if ($diffInMinutes > 480) {
+                                                                $fail("Durasi tidak boleh lebih dari 8 jam.");
+                                                            }
+                                                        }
+                                                    };
+                                                },
+                                            ])
+                                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                                $mulai = $get('waktu_mulai');
+                                                $selesai = $state;
+
+                                                if ($mulai && $selesai) {
+                                                    $mulaiCarbon = Carbon::parse($mulai);
+                                                    $selesaiCarbon = Carbon::parse($selesai);
+
+                                                    $diffInMinutes = $mulaiCarbon->diffInMinutes($selesaiCarbon);
+
+                                                    if ($diffInMinutes > 480) {
+                                                        // Atur otomatis waktu_selesai jadi 8 jam dari waktu_mulai
+                                                        $set('waktu_selesai', $mulaiCarbon->copy()->addHours(8));
+
+                                                        Notification::make()
+                                                            ->title('Durasi otomatis dibatasi 8 jam')
+                                                            ->body('Waktu selesai telah diubah agar durasi maksimal hanya 8 jam.')
+                                                            ->danger()
+                                                            ->send();
+                                                    }
+                                                }
+                                            }),
                                     ]),
                             ]),
 
@@ -131,6 +179,12 @@ class WorkReportResource extends Resource
                 Tables\Columns\TextColumn::make('kegiatan')
                     ->searchable(),
 
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Foto Kegiatan')
+                    ->circular()
+                    ->stacked()
+                    ->size(40),
+
                 Tables\Columns\TextColumn::make('waktu_mulai')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
@@ -140,6 +194,30 @@ class WorkReportResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 // ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('durasi')
+                    ->label('Durasi')
+                    ->getStateUsing(function ($record) {
+                        if (! $record->waktu_mulai || ! $record->waktu_selesai) {
+                            return '-';
+                        }
+
+                        $mulai = \Carbon\Carbon::parse($record->waktu_mulai);
+                        $selesai = \Carbon\Carbon::parse($record->waktu_selesai);
+
+                        $diffInMinutes = $mulai->diffInMinutes($selesai);
+
+                        // Batasi maksimum 8 jam (480 menit)
+                        if ($diffInMinutes > 480) {
+                            return '8 jam';
+                        }
+
+                        $jam = floor($diffInMinutes / 60);
+                        $menit = $diffInMinutes % 60;
+
+                        return ($jam > 0 ? "{$jam} jam " : '') . ($menit > 0 ? "{$menit} menit" : '');
+                    })
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('state')

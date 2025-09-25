@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('work_list_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('work_list_id')->nullable()->constrained('work_lists')->cascadeOnDelete();
-            $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();
+            $table->string('work_list_id')->nullable()->constrained('work_lists')->cascadeOnDelete();
+            $table->string('item_id')->nullable()->constrained('items')->cascadeOnDelete();
             $table->string('description')->nullable();
             $table->integer('quantity')->nullable()->default(1);
-            $table->foreignId('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
+            $table->string('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
             $table->timestamps();
         });
     }

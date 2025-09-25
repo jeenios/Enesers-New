@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('taxes', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->boolean('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->float('value')->nullable()->default(0);

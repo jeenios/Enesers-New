@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name')->nullable();
-            $table->foreignId('financial_account_id')->nullable()->constrained('financial_accounts')->cascadeOnDelete();
+            $table->string('financial_account_id')->nullable()->constrained('financial_accounts')->cascadeOnDelete();
             $table->string('description')->nullable();
             $table->timestamps();
         });

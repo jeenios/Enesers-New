@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseInvoiceRefundResource\Pages;
 use App\Filament\Resources\PurchaseInvoiceRefundResource\RelationManagers;
+use App\Models\BusinessUnit;
 use App\Models\PurchaseInvoiceRefund;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -19,6 +20,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -49,12 +51,14 @@ class PurchaseInvoiceRefundResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm']),
 
+
                                         Select::make('bussiness_unit_id')
                                             ->label('Bussiness Unit Type')
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('bussinessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -88,6 +92,7 @@ class PurchaseInvoiceRefundResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()

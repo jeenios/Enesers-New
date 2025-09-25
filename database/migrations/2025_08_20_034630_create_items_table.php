@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->boolean('toggle')->nullable()->default(false);
             $table->string('barcode')->nullable();
             $table->string('name')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('initial_buy')->nullable();
             $table->string('purchase_tax')->nullable(); // ini belum tau
             $table->string('sales_tax')->nullable(); // ini belum tau
-            $table->foreignId('item_category_id')->nullable()->constrained('item_categories')->cascadeOnDelete();
+            $table->string('item_category_id')->nullable();
             $table->string('weight')->nullable();
             $table->string('volume')->nullable();
             $table->string('length')->nullable();

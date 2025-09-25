@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('manufacture_orders', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Pending');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Pending');
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
             $table->foreignId('item_category_id')->nullable()->constrained('item_categories')->cascadeOnDelete();
             $table->string('manufacture_quantity');

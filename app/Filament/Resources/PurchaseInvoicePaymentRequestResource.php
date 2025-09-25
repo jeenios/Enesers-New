@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseInvoicePaymentRequestResource\Pages;
 use App\Filament\Resources\PurchaseInvoicePaymentRequestResource\RelationManagers;
+use App\Models\Company;
+use App\Models\Currency;
 use App\Models\PurchaseInvoicePaymentRequest;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -20,6 +22,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use ZipArchive;
@@ -58,6 +61,7 @@ class PurchaseInvoicePaymentRequestResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -113,6 +117,7 @@ class PurchaseInvoicePaymentRequestResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -124,6 +129,7 @@ class PurchaseInvoicePaymentRequestResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('currency', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Currency::where('name', 'Indonesian Rupiah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -182,6 +188,7 @@ class PurchaseInvoicePaymentRequestResource extends Resource
                                                 TextInput::make('amount')
                                                     ->label('Amount'),
                                                 TextInput::make('discount')
+                                                    ->numeric()
                                                     ->label('Discount'),
                                             ])
                                             ->columns(4)

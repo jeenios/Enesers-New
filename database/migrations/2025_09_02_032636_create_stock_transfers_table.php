@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('stock_transfers', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
             $table->foreignId('bussiness_unit_id')->nullable()->constrained('business_units')->cascadeOnDelete();
             $table->string('project_input')->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('transaction_at')->nullable();
             $table->string('delivered_at')->nullable();
             $table->json('image')->nullable();
-            $table->foreignId('purchase_requisition_id')->nullable()->constrained('purchase_requisitions')->cascadeOnDelete();
+            $table->string('purchase_requisition_id')->nullable();
             $table->timestamps();
         });
     }

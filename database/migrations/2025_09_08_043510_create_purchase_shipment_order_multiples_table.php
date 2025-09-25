@@ -13,22 +13,16 @@ return new class extends Migration
     {
         Schema::create('purchase_shipment_order_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_shipment_order_id')->nullable()->constrained('purchase_shipment_orders')->cascadeOnDelete();
-            $table->foreignId('purchase_shipment_order_multiple')
-                ->nullable()
-                ->constrained('purchase_requisition_multiples')
-                ->nullOnDelete();
-            $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();
+            $table->string('purchase_shipment_order_id')->nullable();
+            $table->string('purchase_shipment_order_multiple')->nullable();
+            $table->string('item_id')->nullable();
             $table->string('description')->nullable();
             $table->integer('quantity')->nullable()->default(1);
             $table->integer('price')->nullable();
             $table->boolean('toggle_discount')->nullable()->default(false);
-            $table->foreignId('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
-            $table->foreignId('discount_id')->nullable()->constrained('discounts')->cascadeOnDelete();
-            $table->foreignId('tax_id')
-                ->nullable()
-                ->constrained('taxes')
-                ->cascadeOnDelete();
+            $table->string('unit_id')->nullable();
+            $table->string('discount_id')->nullable();
+            $table->string('tax_id')->nullable();
             $table->timestamps();
         });
     }

@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseInvoicePaymentResource\Pages;
 use App\Filament\Resources\PurchaseInvoicePaymentResource\RelationManagers;
+use App\Models\Company;
+use App\Models\Currency;
 use App\Models\PurchaseInvoicePayment;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -24,6 +26,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -35,7 +38,7 @@ class PurchaseInvoicePaymentResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('Admin');
+        return auth()->user()?->hasAnyRole(['Admin', 'Accounting']);
     }
 
     public static function form(Form $form): Form
@@ -60,6 +63,7 @@ class PurchaseInvoicePaymentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -115,6 +119,7 @@ class PurchaseInvoicePaymentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -126,6 +131,7 @@ class PurchaseInvoicePaymentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('currency', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Currency::where('name', 'Indonesian Rupiah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -134,6 +140,8 @@ class PurchaseInvoicePaymentResource extends Resource
                                         Select::make('input_type')
                                             ->label('Input Type')
                                             ->inlineLabel()
+                                            ->placeholder('')
+                                            ->default('Accounting')
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->options([
                                                 'Accounting' => 'Accounting',
@@ -152,10 +160,15 @@ class PurchaseInvoicePaymentResource extends Resource
                                             ->rows(5)
                                             ->cols(20),
 
-                                        TextInput::make('peyment_method')
+                                        Select::make('payment_method_id')
                                             ->label('Payment Method')
                                             ->inlineLabel()
-                                            ->extraAttributes(['class' => 'max-w-sm']),
+                                            ->extraAttributes(['class' => 'max-w-sm'])
+                                            ->relationship('paymentMethod', 'name')
+                                            ->preload()
+                                            ->searchable()
+                                            ->required()
+                                            ->placeholder(''),
 
                                         Select::make('exchange_rate_id')
                                             ->label('Exchange Rate')
@@ -193,6 +206,7 @@ class PurchaseInvoicePaymentResource extends Resource
                                                 Select::make('purchase_invoice_id')
                                                     ->label('Purchase Invoice')
                                                     ->relationship('purchaseInvoice', 'code')
+                                                    ->placeholder('')
                                                     ->searchable()
                                                     ->preload()
                                                     ->required(),
@@ -219,16 +233,19 @@ class PurchaseInvoicePaymentResource extends Resource
                                                 TextInput::make('amount_financial')->numeric()->label('Amount'),
                                                 Select::make('warehouse_id')
                                                     ->label('Warehouse')
+                                                    ->placeholder('')
                                                     ->relationship('warehouse', 'name')
                                                     ->searchable()
                                                     ->preload(),
                                                 Select::make('business_unit_id')
                                                     ->label('Business Unit')
+                                                    ->placeholder('')
                                                     ->relationship('businessUnit', 'name')
                                                     ->searchable()
                                                     ->preload(),
                                                 Select::make('project_id')
                                                     ->label('Project')
+                                                    ->placeholder('')
                                                     ->relationship('project', 'name')
                                                     ->searchable()
                                                     ->preload(),

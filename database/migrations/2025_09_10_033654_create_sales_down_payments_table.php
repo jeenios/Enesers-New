@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sales_down_payments', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();
             $table->foreignId('currency_id')->nullable()->constrained('currencies')->cascadeOnDelete();
             $table->string('down_payment_amount')->nullable();

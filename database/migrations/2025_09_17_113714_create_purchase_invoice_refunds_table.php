@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_invoice_refunds', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('bussiness_unit_id')->nullable()->constrained('business_units')->cascadeOnDelete();
             $table->foreignId('project_id')->nullable()->constrained('projects')->cascadeOnDelete();
             $table->foreignId('vendor_id')->nullable()->constrained('vendors')->cascadeOnDelete();

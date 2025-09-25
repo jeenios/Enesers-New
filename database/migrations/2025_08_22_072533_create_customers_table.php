@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->boolean('customer')->default(false);
-            $table->foreignId('payment_term_id')->nullable()->constrained('payment_terms')->cascadeOnDelete();
+            $table->string('payment_term_id')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->string('customer_category')->nullable();
             $table->foreignId('sales_pricelist_id')->nullable()->constrained('sales_pricelists')->cascadeOnDelete();

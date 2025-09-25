@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePurchaseInvoicePaymentRequest extends CreateRecord
 {
     protected static string $resource = PurchaseInvoicePaymentRequestResource::class;
+
+    public function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

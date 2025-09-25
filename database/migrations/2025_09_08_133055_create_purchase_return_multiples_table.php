@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('purchase_return_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_return_id')->nullable()->constrained('purchase_returns')->cascadeOnDelete();
-            $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();
+            $table->string('purchase_return_id')->nullable()->constrained('purchase_returns')->cascadeOnDelete();
+            $table->string('item_id')->nullable()->constrained('items')->cascadeOnDelete();
             $table->string('description')->nullable();
             $table->integer('quantity')->nullable()->default(1);
-            $table->foreignId('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
+            $table->string('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
             $table->timestamps();
         });
     }

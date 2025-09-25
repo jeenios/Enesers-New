@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseInvoiceWriteOffResource\Pages;
 use App\Filament\Resources\PurchaseInvoiceWriteOffResource\RelationManagers;
+use App\Models\Company;
 use App\Models\PurchaseInvoiceWriteOff;
 use DateTime;
 use Filament\Forms;
@@ -21,6 +22,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -57,6 +59,7 @@ class PurchaseInvoiceWriteOffResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -124,6 +127,7 @@ class PurchaseInvoiceWriteOffResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -151,6 +155,8 @@ class PurchaseInvoiceWriteOffResource extends Resource
                                             ->label('Amount')
                                             ->required()
                                             ->inlineLabel()
+                                            ->numeric()
+                                            ->default(0)
                                             ->extraAttributes(['class' => 'max-w-sm']),
                                     ]),
                             ]),

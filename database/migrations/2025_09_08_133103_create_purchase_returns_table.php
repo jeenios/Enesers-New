@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_returns', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->string('reference')->nullable();
             $table->string('description')->nullable();
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();

@@ -13,20 +13,14 @@ return new class extends Migration
     {
         Schema::create('purchase_requisition_template_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_requisitiontemplate_id')
-                ->nullable()
-                ->constrained('purchase_requisition_templates')
-                ->cascadeOnDelete();
-            $table->foreignId('item_id')
-                ->nullable()
-                ->constrained('items')
-                ->cascadeOnDelete();
+            $table->string('purchase_requisitiontemplate_id')
+                ->nullable();
+            $table->string('item_id')
+                ->nullable();
             $table->string('description_barcode')->nullable();
             $table->integer('quantity_barcode')->nullable();
-            $table->foreignId('unit_id')
-                ->nullable()
-                ->constrained('units')
-                ->cascadeOnDelete();
+            $table->string('unit_id')
+                ->nullable();
             $table->timestamps();
         });
     }

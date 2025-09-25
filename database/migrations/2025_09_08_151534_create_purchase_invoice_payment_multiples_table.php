@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('purchase_invoice_payment_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_invoice_payment_id')
+            $table->string('purchase_invoice_payment_id')
                 ->nullable()
                 ->constrained('purchase_invoice_payments')
                 ->cascadeOnDelete();
 
-            $table->foreignId('purchase_invoice_id')
+            $table->string('purchase_invoice_id')
                 ->nullable()
                 ->constrained('purchase_invoices')
                 ->nullOnDelete();
-            $table->foreignId('item_id')
+            $table->string('item_id')
                 ->nullable()
                 ->constrained('items')
                 ->cascadeOnDelete();
@@ -34,15 +34,15 @@ return new class extends Migration
             $table->string('description_financial')->nullable();
             $table->decimal('amount_financial', 15, 2)->nullable();
 
-            $table->foreignId('warehouse_id')
+            $table->string('warehouse_id')
                 ->nullable()
                 ->constrained('warehouses')
                 ->cascadeOnDelete();
-            $table->foreignId('business_unit_id')
+            $table->string('business_unit_id')
                 ->nullable()
                 ->constrained('business_units')
                 ->cascadeOnDelete();
-            $table->foreignId('project_id')
+            $table->string('project_id')
                 ->nullable()
                 ->constrained('projects')
                 ->cascadeOnDelete();

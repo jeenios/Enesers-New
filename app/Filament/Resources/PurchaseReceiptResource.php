@@ -4,6 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseReceiptResource\Pages;
 use App\Filament\Resources\PurchaseReceiptResource\RelationManagers;
+use App\Models\BusinessUnit;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Item;
 use App\Models\PurchaseReceipt;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -18,12 +22,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -60,6 +66,7 @@ class PurchaseReceiptResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -67,10 +74,11 @@ class PurchaseReceiptResource extends Resource
 
                                         Select::make('business_unit_id')
                                             ->label('Bussiness Unit Type')
-                                            ->relationship('businessUnit', 'name')
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
+                                            ->relationship('businessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -81,10 +89,10 @@ class PurchaseReceiptResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->options([
-                                                'No Person' => 'No Person',
-                                                'Single Person' => 'Single Person',
-                                                'Multiple Person' => 'Multiple Person',
+                                                'Project' => 'Project',
+                                                'Non Project' => 'Non Project',
                                             ])
+                                            ->default('Non Project')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -98,6 +106,7 @@ class PurchaseReceiptResource extends Resource
                                                 'Price Include Tax' => 'Price Include Tax',
                                                 'Price Exclude Tax' => 'Price Exclude Tax',
                                             ])
+                                            ->default('Price Exclude Tax')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -131,6 +140,7 @@ class PurchaseReceiptResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -142,6 +152,7 @@ class PurchaseReceiptResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('currency', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Currency::where('name', 'Indonesian Rupiah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -243,7 +254,20 @@ class PurchaseReceiptResource extends Resource
                                                     ->preload()
                                                     ->searchable()
                                                     ->placeholder('')
-                                                    ->required(),
+                                                    ->required()
+                                                    ->reactive() // penting supaya trigger
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if ($state) {
+                                                            $item = Item::with('unit')->find($state);
+                                                            if ($item && $item->unit_id) {
+                                                                $set('unit_id', $item->unit_id);
+                                                            } else {
+                                                                $set('unit_id', null);
+                                                            }
+                                                        } else {
+                                                            $set('unit_id', null);
+                                                        }
+                                                    }),
 
                                                 TextInput::make('description')
                                                     ->label('Description'),
@@ -251,6 +275,7 @@ class PurchaseReceiptResource extends Resource
                                                 TextInput::make('quantity')
                                                     ->numeric()
                                                     ->required()
+                                                    ->default(1)
                                                     ->label('Quantity'),
 
                                                 Select::make('unit_id')

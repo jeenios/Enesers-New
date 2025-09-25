@@ -35,8 +35,8 @@ class UserSeeder extends Seeder
             $roleAdmin->givePermissionTo($permission);
         }
 
-        // 3️⃣ Buat user
-        $user = User::create([
+        // User Ali
+        $ali = User::create([
             'code'           => 'EMP0001',
             'username'       => 'alilatukau',
             'state'          => 'Active',
@@ -51,6 +51,24 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-        $user->assignRole($roleAdmin);
+        // User Husien
+        $husien = User::create([
+            'code'           => 'EMP0002',
+            'username'       => 'husien',
+            'state'          => 'Active',
+            'first_name'     => 'Husien',
+            'last_name'      => 'Habib',
+            'employee_name'  => 'Husien Habib',
+            'user_type'      => 'Standard User',
+            'image'          => null,
+            'email'          => 'husien@enesers.com',
+            'email_verified_at' => now(),
+            'password'       => Hash::make('husien'),
+            'remember_token' => Str::random(10),
+        ]);
+
+        // Assign role ke keduanya
+        $ali->assignRole($roleAdmin);
+        $husien->assignRole($roleAdmin);
     }
 }

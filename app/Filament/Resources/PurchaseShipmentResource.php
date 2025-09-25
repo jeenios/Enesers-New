@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseShipmentResource\Pages;
 use App\Filament\Resources\PurchaseShipmentResource\RelationManagers;
+use App\Models\BusinessUnit;
+use App\Models\Company;
+use App\Models\Item;
 use App\Models\PurchaseRequisition;
 use App\Models\PurchaseShipment;
 use Filament\Forms;
@@ -20,6 +23,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -37,14 +41,14 @@ class PurchaseShipmentResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('Admin');
+        return auth()->user()?->hasAnyRole(['Admin', 'Warehouse', 'Accounting']);
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Tabs::make('SPurchase Shipment Information')
+                Tabs::make('Purchase Shipment Information')
                     ->tabs([
                         Tabs\Tab::make('General')
                             ->schema([
@@ -62,6 +66,7 @@ class PurchaseShipmentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -73,6 +78,7 @@ class PurchaseShipmentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('bussinessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -83,10 +89,10 @@ class PurchaseShipmentResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->options([
+                                                'Project' => 'Project',
                                                 'Non Project' => 'Non Project',
-                                                'Single Project' => 'Single Project',
-                                                'Multiple Project' => 'Multiple Project',
                                             ])
+                                            ->default('Non Project')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -120,6 +126,7 @@ class PurchaseShipmentResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => auth()->user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -177,7 +184,20 @@ class PurchaseShipmentResource extends Resource
                                                     ->preload()
                                                     ->searchable()
                                                     ->placeholder('')
-                                                    ->required(),
+                                                    ->required()
+                                                    ->reactive() // penting supaya trigger
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if ($state) {
+                                                            $item = Item::with('unit')->find($state);
+                                                            if ($item && $item->unit_id) {
+                                                                $set('unit_id', $item->unit_id);
+                                                            } else {
+                                                                $set('unit_id', null);
+                                                            }
+                                                        } else {
+                                                            $set('unit_id', null);
+                                                        }
+                                                    }),
 
                                                 TextInput::make('description')->label('Description'),
 

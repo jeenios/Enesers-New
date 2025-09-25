@@ -4,6 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseQuotationResource\Pages;
 use App\Filament\Resources\PurchaseQuotationResource\RelationManagers;
+use App\Models\BusinessUnit;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Item;
 use App\Models\PurchaseQuotation;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -18,12 +22,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -60,6 +66,7 @@ class PurchaseQuotationResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -71,6 +78,7 @@ class PurchaseQuotationResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('bussinessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -81,10 +89,10 @@ class PurchaseQuotationResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->options([
+                                                'Project' => 'Project',
                                                 'Non Project' => 'Non Project',
-                                                'Single Project' => 'Single Project',
-                                                'Multiple Project' => 'Multiple Project',
                                             ])
+                                            ->default('Non Project')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -98,6 +106,7 @@ class PurchaseQuotationResource extends Resource
                                                 'Item' => 'Item',
                                                 'Vendor' => 'Vendor',
                                             ])
+                                            ->default('Item')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -108,9 +117,10 @@ class PurchaseQuotationResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->options([
-                                                'Item' => 'Item',
-                                                'Vendor' => 'Vendor',
+                                                'Price Include Tax' => 'Price Include Tax',
+                                                'Price Exclude Tax' => 'Price Exclude Tax',
                                             ])
+                                            ->default('Price Exclude Tax')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -144,6 +154,7 @@ class PurchaseQuotationResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -155,6 +166,7 @@ class PurchaseQuotationResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('currency', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Currency::where('name', 'Indonesian Rupiah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -204,21 +216,16 @@ class PurchaseQuotationResource extends Resource
                                             ->rows(5)
                                             ->cols(20),
 
-                                        Select::make('payment_term')
+                                        Select::make('payment_term_id')
                                             ->label('Payment Term')
-                                            ->options([
-                                                'Immediate Payment' => 'Immediate Payment',
-                                                'Net 20 Days' => 'Net 20 Days',
-                                                'Net 30 Days' => 'Net 30 Days',
-                                                'Net 40 Days' => 'Net 40 Days',
-                                                'Net 50 Days' => 'Net 50 Days',
-                                                'Net 60 Days' => 'Net 60 Days',
-                                            ])
                                             ->inlineLabel()
-                                            ->placeholder('')
+                                            ->extraAttributes(['class' => 'max-w-sm'])
+                                            ->relationship('paymentTerm', 'name', fn($query) => $query)
+                                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
                                             ->preload()
                                             ->searchable()
-                                            ->extraAttributes(['class' => 'max-w-sm']),
+                                            ->required()
+                                            ->placeholder(''),
 
                                         DateTimePicker::make('transaction_at')
                                             ->label('Transaction At')
@@ -250,7 +257,20 @@ class PurchaseQuotationResource extends Resource
                                                     ->preload()
                                                     ->searchable()
                                                     ->placeholder('')
-                                                    ->required(),
+                                                    ->required()
+                                                    ->reactive() // penting supaya trigger
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if ($state) {
+                                                            $item = Item::with('unit')->find($state);
+                                                            if ($item && $item->unit_id) {
+                                                                $set('unit_id', $item->unit_id);
+                                                            } else {
+                                                                $set('unit_id', null);
+                                                            }
+                                                        } else {
+                                                            $set('unit_id', null);
+                                                        }
+                                                    }),
                                                 TextInput::make('description')
                                                     ->label('Description'),
                                                 TextInput::make('quantity')

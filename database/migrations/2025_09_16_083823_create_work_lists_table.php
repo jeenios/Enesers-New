@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('work_lists', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->string('permintaan')->nullable();
             $table->foreignId('hospital_id')->nullable()->constrained('hospitals')->cascadeOnDelete();
             $table->date('tgl_instalasi')->nullable();

@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('purchase_requisition_templates', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('description')->nullable();
-            $table->foreignId('warehouse_id')->nullable()->constrained('warehouses')->cascadeOnDelete();
+            $table->string('warehouse_id')->nullable();
             $table->string('transaction_at')->nullable();
-            $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();
+            $table->string('item_id')->nullable();
             $table->integer('description_barcode')->nullable();
             $table->integer('quantity_barcode')->nullable();
-            $table->foreignId('unit_id')->nullable()->constrained('units')->cascadeOnDelete();
+            $table->string('unit_id')->nullable();
             $table->timestamps();
         });
     }

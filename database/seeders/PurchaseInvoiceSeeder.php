@@ -41,7 +41,7 @@ class PurchaseInvoiceSeeder extends Seeder
                 'delivery_method_id'     => $deliveryMethodId,
                 'reference'              => 'REF-' . Str::random(5),
                 'description'            => fake()->sentence(),
-                'payment_term'           => fake()->randomElement(['30 days', '60 days', '90 days']),
+                'payment_term_id'        => 1,
                 'transaction_at'         => now()->subDays(rand(1, 10))->toDateString(),
                 'due_at'                 => now()->addDays(rand(10, 30))->toDateString(),
                 'delivery_at'            => now()->addDays(rand(5, 15))->toDateString(),

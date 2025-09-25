@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
-            $table->foreignId('payment_term_id')->nullable()->constrained('payment_terms')->cascadeOnDelete();
+            $table->string('payment_term_id')->nullable();
             $table->string('vendor_category')->nullable();
             $table->boolean('tax')->nullable()->default(false);
             $table->string('tax_name')->nullable();

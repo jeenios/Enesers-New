@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('work_reports', function (Blueprint $table) {
             $table->id();
             $table->string('code')->uniqiue();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->string('kegiatan')->nullable();
             $table->string('waktu_mulai')->nullable();

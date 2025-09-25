@@ -41,22 +41,10 @@ class CurrencyResource extends Resource
                         Grid::make(1)->schema([
                             TextInput::make('code')
                                 ->label('Code')
-
                                 ->inlineLabel()
                                 ->extraAttributes(['class' => 'max-w-sm'])
                                 ->required()
                                 ->unique(ignoreRecord: true),
-
-                            // Select::make('state')
-                            //     ->label('State')
-                            //     ->inlineLabel()
-                            //     ->extraAttributes(['class' => 'max-w-sm'])
-                            //     ->options([
-                            //         'Active' => 'Active',
-                            //         'Inactive' => 'Inactive',
-                            //     ])
-                            //     ->default('Active')
-                            //     ->required(),
 
                             TextInput::make('name')
                                 ->label('Name')
@@ -81,15 +69,13 @@ class CurrencyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\BadgeColumn::make('state')
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
-                    ])
-                    ->sortable(),
+                    ]),
 
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -98,13 +84,11 @@ class CurrencyResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
             ])

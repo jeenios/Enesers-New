@@ -32,6 +32,8 @@ class SalesQuotationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Sales New';
+
     public static function canViewAny(): bool
     {
         return auth()->user()?->hasRole('Admin');
@@ -550,15 +552,5 @@ class SalesQuotationResource extends Resource
             'create' => Pages\CreateSalesQuotation::route('/create'),
             'edit' => Pages\EditSalesQuotation::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Sales';
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return 2;
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vendor_items', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name');
             $table->foreignId('vendor_id')->nullable()->constrained('vendors')->cascadeOnDelete();
             $table->foreignId('item_id')->nullable()->constrained('items')->cascadeOnDelete();

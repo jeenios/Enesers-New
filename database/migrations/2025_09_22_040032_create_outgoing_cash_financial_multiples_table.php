@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('outgoing_cash_financial_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('outgoing_cash_financial_id')->nullable()->constrained('outgoing_cash_financials')->cascadeOnDelete();
-            $table->foreignId('financial_reason_id')->nullable()->constrained('financial_reasons')->cascadeOnDelete();
+            $table->string('outgoing_cash_financial_id')->nullable()->constrained('outgoing_cash_financials')->cascadeOnDelete();
+            $table->string('financial_reason_id')->nullable()->constrained('financial_reasons')->cascadeOnDelete();
             $table->string('amount')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();

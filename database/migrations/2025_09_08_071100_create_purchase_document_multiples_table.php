@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('purchase_document_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_document_id')->nullable()->constrained('purchase_documents')->cascadeOnDelete();
-            $table->foreignId('purchase_order_item_id')->nullable()->constrained('purchase_order_items')->cascadeOnDelete();
+            $table->string('purchase_document_id')->nullable()->constrained('purchase_documents')->cascadeOnDelete();
+            $table->string('purchase_order_item_id')->nullable()->constrained('purchase_order_items')->cascadeOnDelete();
 
             $table->string('item_name')->nullable();
             $table->integer('qty')->nullable();

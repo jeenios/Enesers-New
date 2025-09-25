@@ -96,8 +96,9 @@ class PurchaseDownPaymentResource extends Resource
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
                                             ->preload()
                                             ->searchable()
-                                            ->required()
-                                            ->placeholder(''),
+                                            ->placeholder('')
+                                            ->default(auth()->user()->id)
+                                            ->nullable(),
 
                                         DateTimePicker::make('transaction_at')
                                             ->label('Transaction At')

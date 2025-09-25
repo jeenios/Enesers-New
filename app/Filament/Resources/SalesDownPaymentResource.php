@@ -29,6 +29,10 @@ class SalesDownPaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Sales New';
+
+    protected static ?string $navigationParentItem = 'Sales Quotations';
+
     public static function canViewAny(): bool
     {
         return auth()->user()?->hasRole('Admin');
@@ -277,13 +281,9 @@ class SalesDownPaymentResource extends Resource
         ];
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Sales';
-    }
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return 'Sales';
+    // }
 
-    public static function getNavigationSort(): ?int
-    {
-        return 1;
-    }
 }

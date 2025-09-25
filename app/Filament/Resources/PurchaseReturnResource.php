@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseReturnResource\Pages;
 use App\Filament\Resources\PurchaseReturnResource\RelationManagers;
+use App\Models\BusinessUnit;
+use App\Models\Company;
+use App\Models\Item;
 use App\Models\PurchaseReturn;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -17,12 +20,14 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use Illuminate\Support\Str;
 
@@ -72,6 +77,7 @@ class PurchaseReturnResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('company', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => Company::where('name', 'PT Enesers Mitra Berkah')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -83,6 +89,7 @@ class PurchaseReturnResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('bussinessUnit', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}")
+                                            ->default(fn() => BusinessUnit::where('name', 'No Business Unit')->value('id'))
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -96,6 +103,7 @@ class PurchaseReturnResource extends Resource
                                                 'Project' => 'Project',
                                                 'Non Project' => 'Non Project',
                                             ])
+                                            ->default('Non Project')
                                             ->preload()
                                             ->searchable()
                                             ->required()
@@ -129,6 +137,7 @@ class PurchaseReturnResource extends Resource
                                             ->extraAttributes(['class' => 'max-w-sm'])
                                             ->relationship('user', 'name', fn($query) => $query)
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->employee_name}")
+                                            ->default(fn() => Auth::user()->id)
                                             ->preload()
                                             ->searchable()
                                             ->placeholder('')
@@ -159,7 +168,20 @@ class PurchaseReturnResource extends Resource
                                                     ->preload()
                                                     ->searchable()
                                                     ->placeholder('')
-                                                    ->required(),
+                                                    ->required()
+                                                    ->reactive() // penting supaya trigger
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if ($state) {
+                                                            $item = Item::with('unit')->find($state);
+                                                            if ($item && $item->unit_id) {
+                                                                $set('unit_id', $item->unit_id);
+                                                            } else {
+                                                                $set('unit_id', null);
+                                                            }
+                                                        } else {
+                                                            $set('unit_id', null);
+                                                        }
+                                                    }),
                                                 TextInput::make('description')
                                                     ->label('Description'),
                                                 TextInput::make('quantity')

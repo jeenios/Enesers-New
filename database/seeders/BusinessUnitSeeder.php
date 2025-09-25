@@ -17,8 +17,8 @@ class BusinessUnitSeeder extends Seeder
             [
                 'code' => 'BU0001',
                 'state' => 'Active',
-                'name' => 'Finance Division',
-                'description' => 'Handles company financial operations',
+                'name' => 'No Business Unit',
+                'description' => 'Multiple Business Unit',
                 'business_unit_category_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -26,8 +26,8 @@ class BusinessUnitSeeder extends Seeder
             [
                 'code' => 'BU0002',
                 'state' => 'Active',
-                'name' => 'Human Resources',
-                'description' => 'Handles HR operations',
+                'name' => 'Single Business Unit',
+                'description' => 'Multiple Business Unit',
                 'business_unit_category_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -35,8 +35,8 @@ class BusinessUnitSeeder extends Seeder
             [
                 'code' => 'BU0003',
                 'state' => 'Inactive',
-                'name' => 'IT Department',
-                'description' => 'Handles IT support and infrastructure',
+                'name' => 'Multiple Business Unit',
+                'description' => 'Multiple Business Unit',
                 'business_unit_category_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_quotations', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
             $table->foreignId('bussiness_unit_id')->nullable()->constrained('business_units')->cascadeOnDelete();
             $table->string('project_input')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('rounding_amount');
             $table->string('reference')->nullable();
             $table->string('description')->nullable();
-            $table->string('payment_term')->nullable();
+            $table->string('payment_term_id')->nullable();
             $table->string('transaction_at')->nullable();
             $table->string('delivery_at')->nullable();
             $table->string('expired_at')->nullable();

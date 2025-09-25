@@ -246,8 +246,7 @@ class CustomerResource extends Resource
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
-                    ])
-                    ->sortable(),
+                    ]),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -263,12 +262,10 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('grace_period')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->dateTime('d/m/Y H:i'),
                 // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

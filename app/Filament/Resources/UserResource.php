@@ -46,6 +46,14 @@ class UserResource extends Resource
                             ->schema([
                                 Grid::make(1)
                                     ->schema([
+                                        TextInput::make('code')
+                                            ->label('Code')
+                                            ->inlineLabel()
+                                            ->required()
+                                            ->extraAttributes(['class' => 'max-w-sm'])
+                                            ->required()
+                                            ->unique(ignoreRecord: true),
+
                                         TextInput::make('username')
                                             ->label('Username')
                                             ->inlineLabel()
@@ -151,16 +159,18 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('code')
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('username')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\BadgeColumn::make('state')
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
                     ])
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label('Roles')
@@ -170,7 +180,7 @@ class UserResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('user_type')
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\ImageColumn::make('image')
                     ->circular()
@@ -182,16 +192,16 @@ class UserResource extends Resource
 
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->searchable(),
                 // ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->searchable(),
                 // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([

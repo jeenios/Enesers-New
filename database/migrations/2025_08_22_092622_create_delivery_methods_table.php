@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('delivery_methods', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->boolean('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();

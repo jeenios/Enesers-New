@@ -84,4 +84,9 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany(PurchaseOrderMultiple::class);
     }
+
+    public function paymentTerm()
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
 }

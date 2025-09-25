@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('item_barcode_generators', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Active', 'Inactive'])->nullable()->default('Active');
+            $table->enum('state', ['Active', 'Inactive'])->nullable()->default('Active');
             $table->string('description')->nullable();
             $table->foreignId('sales_pricelist_id')->nullable()->constrained('sales_pricelists')->cascadeOnDelete();
             $table->integer('quantity_modifier')->nullable();

@@ -18,6 +18,11 @@ class PurchaseShipmentOrder extends Model
         'id',
     ];
 
+    public function paymentTerm()
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
+
     public function purchaseShipmentOrderMultiple()
     {
         return $this->hasMany(PurchaseShipmentOrderMultiple::class, 'purchase_shipment_order_id');

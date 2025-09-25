@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_invoice_payments', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('state', ['Completed', 'Pending'])->nullable()->default('Completed');
+            $table->enum('state', ['Completed', 'Pending'])->nullable()->default('Completed');
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
             $table->foreignId('bussiness_unit_id')->nullable()->constrained('business_units')->cascadeOnDelete();
             $table->foreignId('project_id')->nullable()->constrained('projects')->cascadeOnDelete();
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('input_type')->nullable();
             $table->string('reference')->nullable();
             $table->string('description')->nullable();
-            $table->string('payment_method')->nullable();
+            $table->string('payment_method_id')->nullable();
             $table->foreignId('exchange_rate_id')->nullable()->constrained('exchange_rates')->cascadeOnDelete();
             $table->string('transaction_at')->nullable();
             $table->string('paid_at')->nullable();

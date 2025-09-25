@@ -32,7 +32,11 @@ class SalesOrderResource extends Resource
 {
     protected static ?string $model = SalesOrder::class;
 
+    protected static ?string $navigationGroup = 'Sales New';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $modelLabel = 'Sales Orders';
 
     public static function canViewAny(): bool
     {
@@ -817,13 +821,13 @@ class SalesOrderResource extends Resource
         ];
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Sales';
-    }
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return 'Sales';
+    // }
 
-    public static function getNavigationSort(): ?int
-    {
-        return 3;
-    }
+    // public static function getNavigationSort(): ?int
+    // {
+    //     return 3;
+    // }
 }

@@ -36,7 +36,7 @@ class WorkListResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('Admin');
+        return auth()->user()?->hasAnyRole(['Admin', 'Aftersale']);
     }
 
     public static function form(Form $form): Form

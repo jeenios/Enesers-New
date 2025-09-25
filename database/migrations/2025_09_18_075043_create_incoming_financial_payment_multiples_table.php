@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('incoming_financial_payment_multiples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('incoming_financial_payment_id')->nullable()->constrained('incoming_financial_payments')->cascadeOnDelete();
-            $table->foreignId('financial_reason_id')->nullable()->constrained('financial_reasons')->cascadeOnDelete();
+            $table->string('incoming_financial_payment_id')->nullable()->constrained('incoming_financial_payments')->cascadeOnDelete();
+            $table->string('financial_reason_id')->nullable()->constrained('financial_reasons')->cascadeOnDelete();
             $table->string('amount')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();

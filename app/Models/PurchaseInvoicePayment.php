@@ -18,6 +18,11 @@ class PurchaseInvoicePayment extends Model
         'id',
     ];
 
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
     public function purchaseInvoicePaymentMultiple()
     {
         return $this->hasMany(PurchaseInvoicePaymentMultiple::class, 'purchase_invoice_payment_id');
